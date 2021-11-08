@@ -5,7 +5,7 @@
 int check_for_exit1(DWORD dwProcessId){
 	HANDLE hProcess = OpenProcess(SYNCHRONIZE, FALSE,dwProcessId);
 	DWORD returnVal = WaitForSingleObject(hProcess,0);
-	if (returnVal == 0xFFFFFFFF){
+	if (returnVal == WAIT_OBJECT_0){
 		return 1;
 	}
 	return 0;
@@ -13,7 +13,7 @@ int check_for_exit1(DWORD dwProcessId){
 int check_for_exit2(DWORD dwProcessId){
 	HANDLE hProcess = OpenProcess(SYNCHRONIZE, FALSE,dwProcessId);
 	DWORD returnVal = WaitForMultipleObjects(1,(CONST HANDLE *)&hProcess, TRUE,0);
-	if (returnVal == 0xFFFFFFFF){
+	if (returnVal == WAIT_OBJECT_0){
 		return 1;
 	}
 	return 0;
