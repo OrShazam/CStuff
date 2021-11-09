@@ -3,34 +3,45 @@
 // might be useful for obfuscation?
 
 int check_for_exit1(DWORD dwProcessId){
+	int returnVal;
 	HANDLE hProcess = OpenProcess(SYNCHRONIZE, FALSE,dwProcessId);
-	DWORD returnVal = WaitForSingleObject(hProcess,0);
-	if (returnVal == WAIT_OBJECT_0){
-		return 1;
+	DWORD waitVal = WaitForSingleObject(hProcess,0);
+	if (waitVal == WAIT_OBJECT_0){
+		returnVal = 1;
 	}
-	return 0;
+	else { returnVal = 0;}
+	CloseHandle(hProcess);
+	return returnVal;
 }
 int check_for_exit2(DWORD dwProcessId){
+	int returnVal;
 	HANDLE hProcess = OpenProcess(SYNCHRONIZE, FALSE,dwProcessId);
-	DWORD returnVal = WaitForMultipleObjects(1,(CONST HANDLE *)&hProcess, TRUE,0);
-	if (returnVal == WAIT_OBJECT_0){
-		return 1;
+	DWORD waitVal = WaitForMultipleObjects(1,(CONST HANDLE *)&hProcess, TRUE,0);
+	if (waitVal == WAIT_OBJECT_0){
+		returnVal = 1;
 	}
-	return 0;
+	else { returnVal = 0;}
+	CloseHandle(hProcess);
+	return returnVal;
+	
 }
 int check_for_exit3(DWORD dwProcessId){
+	int returnVal;
 	HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE,dwProcessId);
 	DWORD exitCode;
 	GetExitCodeProcess(hProcess,(LPDWORD)&exitCode);
 	if (exitCode == STILL_ACTIVE){
-		return 0;
+		returnVal = 0;
 	}
-	return 1;
+	else { returnVal = 1;}
+	CloseHandle(hProcess);
+	return returnVal;
 }
 int check_for_exit4(DWORD dwProcessId){
 	HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, dwProcessId);
 	if (hProcess == NULL){
 		return 0;
 	}
+	CloseHandle(hProcess);
 	return 1;
 }
