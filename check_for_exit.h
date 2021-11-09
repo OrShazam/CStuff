@@ -27,10 +27,3 @@ int check_for_exit3(DWORD dwProcessId){
 	}
 	return 1;
 }
-int check_for_exit4(DWORD dwProcessId){
-	HANDLE hProcess = OpenProcess(SYNCHRONIZE, FALSE, dwProcessId);
-	if (hProcess == NULL){
-		return 0;
-	}
-	return 1;
-}
