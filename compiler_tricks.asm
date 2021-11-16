@@ -1,4 +1,4 @@
-       
+;gcc generated, not my own code
 ;edx -> edx % 10
         mov     ecx, edx
         movsx   rax, ecx
