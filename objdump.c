@@ -58,5 +58,6 @@ int main(int argc, char** argv){
 	size_t toPrint;
 	unsigned char* buffer = readFile(argv[1],&toPrint);
 	dump(buffer,toPrint);
+	free(buffer);
 	return 0;
 }
