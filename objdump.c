@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-// objdump alternative for windows
+// objdump implementation
 static unsigned char* readFile(const char* path, size_t* fileSize){
 	// Referenced from 'Crafting Interpreters'
 	FILE* file = fopen(path, "rb");
