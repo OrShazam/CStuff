@@ -5,6 +5,7 @@
 
 
 HMODULE LoadLibrary(const char* libName){
+	// todo: enumerate PEB to see if library is already loaded
 	char libPath[MAX_PATH];
 	strcpy(libPath,"C:/Windows/System32/");
 	strcat(libPath, libName);
