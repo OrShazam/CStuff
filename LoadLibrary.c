@@ -1,4 +1,5 @@
 #include <string.h>
+#include <windows.h>
 #define MAX_PATH 260
 
 //LoadLibrary implementation
