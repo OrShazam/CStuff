@@ -39,7 +39,7 @@ HMODULE LoadLibrary(const char* libName){
 		memcpy(buffer + currSection->VirtualAddress, fileBuffer 
 			+ currSection->PointerToRawData, SizeOfRawData);
 		
-		if (applyReloc){
+		if (applyReloc && (currSection->PointerToRelocations != NULL)){
 			PIMAGE_BASE_RELOCATION relocData = fileBuffer +
 				currSection->PointerToRelocations;
 			int relocDataCount = currSection->NumberOfRelocations;
