@@ -1,22 +1,24 @@
 #include <string.h>
 #include <windows.h>
+#include <stdbool.h>
 #define MAX_PATH 260
 
 //LoadLibrary implementation
 
+PBYTE LoadFile(LPSTR filename,LPVOID desiredBase);
+PBYTE AllocBuffer(size_t bufferSize, DWORD protect, LPVOID desiredBase);
 
 HMODULE LoadLibrary(const char* libName){
-	// todo: enumerate PEB to see if library is already loaded
 	char libPath[MAX_PATH];
 	strcpy(libPath,"C:/Windows/System32/");
 	strcat(libPath, libName);
-	PBYTE fileBuffer = LoadFile(libPath);
+	PBYTE fileBuffer = LoadFile(libPath,NULL);
 	if(fileBuffer == NULL)
 		return NULL;
 	
 	bool applyReloc = false;
 	PIMAGE_NT_HEADERS libNtHeader = (PIMAGE_NT_HEADERS)(fileBuffer +
-		((IMAGE_DOS_HEADER)fileBuffer)->e_lfanew);	
+		((PIMAGE_DOS_HEADER)fileBuffer)->e_lfanew);	
 	size_t imageSize = libNtHeader->OptionalHeader.SizeOfImage;
 	ULONGLONG imageDesiredBase = libNtHeader->OptionalHeader.ImageBase;
 	
@@ -39,11 +41,11 @@ HMODULE LoadLibrary(const char* libName){
 	for (int i = 0; i < numSections; i++){
 		PIMAGE_SECTION_HEADER currSection = firstSection + i * sizeof(IMAGE_SECTION_HEADER);
 		memcpy(buffer + currSection->VirtualAddress, fileBuffer 
-			+ currSection->PointerToRawData, SizeOfRawData);
+			+ currSection->PointerToRawData, currSection->SizeOfRawData);
 		
-		if (applyReloc && (currSection->PointerToRelocations != NULL)){
-			PIMAGE_BASE_RELOCATION relocData = fileBuffer +
-				currSection->PointerToRelocations;
+		if (applyReloc){
+			PIMAGE_BASE_RELOCATION relocData = (PIMAGE_BASE_RELOCATION)(fileBuffer +
+				currSection->PointerToRelocations);
 			int relocDataCount = currSection->NumberOfRelocations;
 			for (int j = 0; j < relocDataCount;j++){
 				
@@ -54,8 +56,8 @@ HMODULE LoadLibrary(const char* libName){
 					WORD* currEntry = (WORD*)(relocData + sizeof(DWORD) * 2 
 						+ sizeof(WORD) * k);
 						
-					DWORD* address = relocData->VirtualAddress + *currEntry;
-					*address += (buffer - imageDesiredBase);
+					LPVOID* address = (LPVOID*)( relocData->VirtualAddress + *currEntry);
+					*address = (LPVOID)(*address + (DWORD)buffer - (DWORD)imageDesiredBase);
 				}
 				
 				relocData += relocData->SizeOfBlock;	
@@ -64,14 +66,14 @@ HMODULE LoadLibrary(const char* libName){
 		
 	}
 	DWORD oldProtect;
-	VirtualProtect(buffer,SizeOfImage,PAGE_EXECUTE_READ, &oldProtect);
+	VirtualProtect(buffer,imageSize,PAGE_EXECUTE_READ, &oldProtect);
 	// read protection for GetProcAddress
 	return (HMODULE)buffer;
 	
 }
 // stephen fewer (https://github.com/stephenfewer) got an amazing implementation 
 // for GetProcAddress if you might be interested 
-PBYTE LoadFile(LPSTR filename,LPVOID desiredBase = NULL)
+PBYTE LoadFile(LPSTR filename,LPVOID desiredBase)
 {
 	PBYTE address;
 	HANDLE hFile = NULL, mapping = NULL;
@@ -83,7 +85,7 @@ PBYTE LoadFile(LPSTR filename,LPVOID desiredBase = NULL)
 	if (hFile == INVALID_HANDLE_VALUE) {
 		return NULL;
 	}
-	HANDLE mapping = CreateFileMapping(hFile, 0,
+	mapping = CreateFileMapping(hFile, 0,
 		PAGE_READONLY, 0, 0, 0);
 	if (!mapping)
 		goto END;
@@ -93,7 +95,7 @@ PBYTE LoadFile(LPSTR filename,LPVOID desiredBase = NULL)
 		goto END;
 
 	fileSize = GetFileSize(hFile, 0);
-	address = AllocBuffer(toLoad, PAGE_READWRITE, desiredBase);
+	address = AllocBuffer(fileSize,PAGE_READWRITE, desiredBase);
 	if (address != NULL) {
 		memcpy(address, rawData, fileSize);
 	}
