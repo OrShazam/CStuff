@@ -30,8 +30,8 @@ HMODULE LoadLibrary(const char* libName){
 	
 	int numSections = libNtHeader->FileHeader.NumberOfSections;
 	
-	size_t headerSize = sizeof(IMAGE_DOS_HEADER) + sizeof(IMAGE_NT_HEADERS)
-		+ numSections * sizeof(IMAGE_SECTION_HEADER);
+	size_t headerSize = ((PIMAGE_DOS_HEADER)fileBuffer)->e_lfanew + sizeof(DWORD)
+		sizeof(IMAGE_FILE_HEADER) + libNtHeader->FileHeader.SizeOfOptionalHeader + numSections * sizeof(IMAGE_SECTION_HEADER);
 	
 	memcpy(buffer,fileBuffer, headerSize);
 	
