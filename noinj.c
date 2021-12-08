@@ -3,6 +3,7 @@
 // from basic Process Injection 
 // (Won't work against methods that spawn their victim process (process hollowing))
 // (or methods that suspended and use NtQueueApcThread)
+// TODO: also hook LdrLoadDll to prevent Dll Injection
 
 BYTE keep[5];
 BYTE hook[5];
