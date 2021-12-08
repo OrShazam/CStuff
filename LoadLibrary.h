@@ -53,8 +53,8 @@ HMODULE LoadLibrary(const char* libName){
 					sizeof(IMAGE_BASE_RELOCATION)) / sizeof(WORD) + 1;
 				
 				for (int k = 0; k < entries; k++){
-					WORD* currEntry = (WORD*)(relocData + sizeof(DWORD) * 2 
-						+ sizeof(WORD) * k);
+					WORD* currEntry = (WORD*)((relocData + sizeof(DWORD) * 2 
+						+ sizeof(WORD) * k) & 0XFFF) // exclude the type data
 						
 					LPVOID* address = (LPVOID*)( relocData->VirtualAddress + *currEntry);
 					*address = (LPVOID)(*address + (DWORD)buffer - (DWORD)imageDesiredBase);
