@@ -2,7 +2,8 @@
 #include <windows.h>
 #include <stdbool.h>
 #define MAX_PATH 260
-
+#define DLL_PROCESS_ATTACH 1
+#define DLL_PROCESS_DETACH 0
 //LoadLibrary implementation
 
 PBYTE LoadFile(LPSTR filename,LPVOID desiredBase);
@@ -56,21 +57,45 @@ HMODULE LoadLibrary(const char* libName){
 					WORD* currEntry = (WORD*)((relocData + sizeof(DWORD) * 2 
 						+ sizeof(WORD) * k) & 0XFFF) // exclude the type data
 						
-					LPVOID* address = (LPVOID*)( relocData->VirtualAddress + *currEntry);
+					LPVOID* address = (LPVOID*)( buffer + relocData->VirtualAddress + *currEntry);
 					*address = (LPVOID)(*address + (DWORD)buffer - (DWORD)imageDesiredBase);
 				}
 				
 				relocData += relocData->SizeOfBlock;	
 			}
-		}
-		
+		}		
 	}
+	BOOL( APIENTRY* DllMain)(
+		IN HMODULE hModule,
+		IN DWORD Reason,
+		IN LPVOID lpReserved
+	) = NULL;
+	DllMain = (BOOL(APIENTRY*)(HMODULE,DWORD,LPVOID))
+		(buffer + libNtHeader->OptionalHeader.AddressOfEntryPoint);
+	
+	DllMain((HMODULE)buffer,DLL_PROCESS_ATTACH,NULL);
 	DWORD oldProtect;
 	VirtualProtect(buffer,imageSize,PAGE_EXECUTE_READ, &oldProtect);
 	// read protection for GetProcAddress
 	return (HMODULE)buffer;
-	
 }
+BOOL FreeLibrary(HMODULE hModule){
+	PIMAGE_NT_HEADERS libNtHeader = (PIMAGE_NT_HEADERS)(hModule +
+		((PIMAGE_DOS_HEADER)hModule)->e_lfanew);
+	
+	BOOL( APIENTRY* DllMain)(
+		IN HMODULE hModule,
+		IN DWORD Reason,
+		IN LPVOID lpReserved
+	) = NULL;
+	DllMain = (BOOL(APIENTRY*)(HMODULE,DWORD,LPVOID))
+		(buffer + libNtHeader->OptionalHeader.AddressOfEntryPoint);
+		
+	DllMain((HMODULE)buffer,DLL_PROCESS_DETACH,NULL);
+		
+	VirtualFree(hModule,0,MEM_RELEASE);
+}
+
 // stephen fewer (https://github.com/stephenfewer) got an amazing implementation 
 // for GetProcAddress if you might be interested 
 PBYTE LoadFile(LPSTR filename,LPVOID desiredBase)
