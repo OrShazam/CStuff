@@ -89,7 +89,7 @@ BOOL FreeLibrary(HMODULE hModule){
 		IN LPVOID lpReserved
 	) = NULL;
 	DllMain = (BOOL(APIENTRY*)(HMODULE,DWORD,LPVOID))
-		(buffer + libNtHeader->OptionalHeader.AddressOfEntryPoint);
+		(hModule + libNtHeader->OptionalHeader.AddressOfEntryPoint);
 		
 	DllMain((HMODULE)buffer,DLL_PROCESS_DETACH,NULL);
 		
