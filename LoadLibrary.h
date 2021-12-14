@@ -10,6 +10,7 @@ PBYTE LoadFile(LPSTR filename,LPVOID desiredBase);
 PBYTE AllocBuffer(size_t bufferSize, DWORD protect, LPVOID desiredBase);
 
 HMODULE LoadLibrary(const char* libName){
+	// should fill IAT and make relocation more generic
 	char libPath[MAX_PATH];
 	strcpy(libPath,"C:/Windows/System32/");
 	strcat(libPath, libName);
