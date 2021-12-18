@@ -77,17 +77,17 @@ int main(){
 		void*,
 		void*))procPtr;
 	DWORD address = &ThreadCheck;
-	hook = {0xE9, address...} // pretend I can do that
+	hook = {0xE9, address...}; // pretend I can do that
 	ReadProcessMemory(
 		GetCurrentProcess(),
 		procPtr,
 		keep,
-		...)
+		...);
 	WriteProcessMemory(
 		GetCurrentProcess(),
 		procPtr,
 		hook,
-		...)
+		...);
 	
 	
 	
