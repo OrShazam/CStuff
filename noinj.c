@@ -43,6 +43,11 @@ void WINAPI ThreadCheck(BOOL aIsInitialThread, void* aStartAddress, void* aThrea
 		// it's probably a malicious functions, but perhaps it's not always true
 		goto BAD;	
 	}
+	//NOTE: 
+	//I'm not a memory expert so i've been extra careful with the check
+	//but if the image base is always the allocation base 
+	// then it's sufficient to do
+	// VirtualQuery(aStartAddress,&info...); if (info.AllocationBase != imageBase)
 	
 	goto CALL; 
 	BAD:
