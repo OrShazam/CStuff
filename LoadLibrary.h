@@ -8,6 +8,7 @@
 
 PBYTE LoadFile(LPSTR filename,LPVOID desiredBase);
 PBYTE AllocBuffer(size_t bufferSize, DWORD protect, LPVOID desiredBase);
+DWORD align(DWORD size,DWORD alignment);
 
 HMODULE LoadLibrary(const char* libName){
 	// should fill IAT and make relocation more generic and should set the protections for the sections
@@ -35,7 +36,7 @@ HMODULE LoadLibrary(const char* libName){
 	size_t headerSize = ((PIMAGE_DOS_HEADER)fileBuffer)->e_lfanew + sizeof(DWORD)
 		sizeof(IMAGE_FILE_HEADER) + libNtHeader->FileHeader.SizeOfOptionalHeader + numSections * sizeof(IMAGE_SECTION_HEADER);
 	
-	memcpy(buffer,fileBuffer, headerSize);
+	memcpy(buffer,fileBuffer, align(headerSize,libNtHeader->OptionalHeader.FileAlignment));
 	
 	PIMAGE_SECTION_HEADER firstSection = (PIMAGE_SECTION_HEADER)
 		(fileBuffer + sizeof(IMAGE_DOS_HEADER) + sizeof(IMAGE_NT_HEADERS));
@@ -97,6 +98,9 @@ BOOL FreeLibrary(HMODULE hModule){
 	VirtualFree(hModule,0,MEM_RELEASE);
 }
 
+DWORD align(DWORD size,DWORD alignment){
+	return (size + alignment - 1) / alignment * alignment;
+}
 // stephen fewer (https://github.com/stephenfewer) got an amazing implementation 
 // for GetProcAddress if you might be interested 
 PBYTE LoadFile(LPSTR filename,LPVOID desiredBase)
