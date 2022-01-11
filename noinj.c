@@ -72,6 +72,8 @@ void WINAPI ThreadCheck(BOOL aIsInitialThread, void* aStartAddress, void* aThrea
 
 
 int main(){
+	SIZE_T read;
+	SIZE_T written;
 	HMODULE hNtdll = LoadLibrary("kernel32.dll");
 	if (hNtdll == NULL){
 		return;
@@ -82,18 +84,22 @@ int main(){
 		void*,
 		void*))procPtr;
 	DWORD address = &ThreadCheck;
-	hook = {0xE9, address...}; // pretend I can do that
+	hook[0] = 0xE8;
+	*(DWORD*)&hook[1] = address
 	ReadProcessMemory(
 		GetCurrentProcess(),
 		procPtr,
 		keep,
-		...);
+		5,
+		&read);
 	WriteProcessMemory(
 		GetCurrentProcess(),
 		procPtr,
 		hook,
-		...);
-	
+		5,
+		&written);
+	//...
+	return 0;
 	
 	
 }
