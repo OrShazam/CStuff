@@ -33,12 +33,13 @@ void WINAPI ThreadCheck(BOOL aIsInitialThread, void* aStartAddress, void* aThrea
 		goto BAD;
 	}
 	DWORD imageMaxAddr = info.AllocationBase + info.RegionSize;
+	DWORD imageMinAddr = info.AllocationBase;
 	infoRead = VirtualQuery(aStartAddress,&info, sizeof(info));
 	if (infoRead != sizeof(info)){
 		goto BAD;
 	}
 	DWORD lpFuncMaxAddr = info.AllocationBase + info.RegionSize;
-	if ((lpFuncMaxAddr > imageMaxAddr) || (info.AllocationBase < imageBase)){
+	if ((lpFuncMaxAddr > imageMaxAddr) || (info.AllocationBase < imageMinAddr)){
 		// if function space belongs to another allocation
 		// it's probably a malicious functions, but perhaps it's not always true
 		goto BAD;	
