@@ -54,14 +54,16 @@ void WINAPI ThreadCheck(BOOL aIsInitialThread, void* aStartAddress, void* aThrea
 		GetCurrentProcess(),
 		procPtr,
 		keep,
-		...);
+		5,
+		&written);
 	_BaseThreadInitChunk(aIsInitialThread,aStartAddress, aThreadParam);
 	// and set again for next call;
 	WriteProcessMemory(
 		GetCurrentProcess(),
 		procPtr,
 		hook,
-		...);
+		5,
+		&written);
 
 }
 
