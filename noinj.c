@@ -5,6 +5,8 @@
 // (or methods that suspended and use NtQueueApcThread)
 // TODO: also hook LdrLoadDll to prevent Dll Injection
 
+#define JMP_RCX 0xffe1
+
 BYTE keep[5];
 BYTE hook[5];
 FARPROC procPtr;
@@ -38,6 +40,12 @@ void WINAPI ThreadCheck(BOOL aIsInitialThread, void* aStartAddress, void* aThrea
 	DWORD imageAllocBase = info.AllocationBase;
 	infoRead = VirtualQuery(aStartAddress,&info, sizeof(info));
 	if (infoRead != sizeof(info)){
+		goto BAD;
+	}
+	if (info.Type != MEM_IMAGE || info.Protect & PAGE_EXECUTE_READWRITE == PAGE_EXECUTE_READWRITE){
+		goto BAD;
+	}
+	if (*(WORD*)aStartAddress == JMP_RCX){ // imagine my code is actually compatible with x64
 		goto BAD;
 	}
 	DWORD lpFuncAllocBase= info.AllocationBase
