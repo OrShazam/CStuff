@@ -20,6 +20,9 @@ DWORD GetMyImageBase(){
 	// first entry in Ldr belongs to image of running process
 	return pLdrDataEntry->DllBase;
 }
+static DWORD WINAPI NopFunc(LPVOID lpParameter){
+	return 0;
+}
 
 void WINAPI ThreadCheck(BOOL aIsInitialThread, void* aStartAddress, void* aThreadParam){
 	// need to actually load the dlls for the functions im using 
@@ -46,7 +49,7 @@ void WINAPI ThreadCheck(BOOL aIsInitialThread, void* aStartAddress, void* aThrea
 	
 	goto CALL; 
 	BAD:
-	aStartAddress = 0x0; // make a crash
+	aStartAddress = NopFunc; 
 	goto CALL;
 	
 	CALL:
