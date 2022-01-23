@@ -39,11 +39,8 @@ static void searchForStrings(const unsigned char* buffer, size_t length){
 				break;
 		}
 		seqLength = j-i;
-		if (seqLength >= 5){
-			for (j = i; j < i + seqLength; j++){
-				printf("%c",buffer[j]);
-			}
-			printf("\n");
+		if (seqLength >= 5 && buffer[j] == 0){
+			printf("%s\n", &buffer[i]);
 		}
 		i += seqLength;
 	}
