@@ -1,5 +1,6 @@
 ;compiler generated code
 ;just generalized it 
+strncmp:
 mov ecx, [ebp+0Ch]
 jecxz epilog
 mov ebx, ecx
