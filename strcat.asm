@@ -18,4 +18,4 @@ rep movsd
 mov ecx, ebx
 and ecx, 3
 rep movsb
-ret 8
+retn
