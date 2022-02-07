@@ -15,13 +15,5 @@ mov esi, [esp+8]
 repe cmpsb
 mov al, [esi-1]
 xor ecx, ecx
-cmp al, [edi-1]
-ja above
-jz epilog 
-dec ecx 
-dec ecx 
-above:
-not ecx
-epilog:
-mov eax, ecx
-retn 
+sub al, [edi-1]
+retn
