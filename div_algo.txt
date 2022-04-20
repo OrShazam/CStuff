@@ -1,0 +1,32 @@
+IDEA FOR MULTIPLIER:
+
+
+int getClosestPowerOf2(int A){
+	// always smaller than A
+	A |= (A >> 1);
+  	A |= (A >> 2);
+ 	A |= (A >> 4);
+  	A |= (A >> 8);
+  	A |= (A >> 16);
+  	A |= (A >> 32);
+	A >> 1;
+	return A;
+}
+
+int getPowerOfPower(int powerOf2){
+	int two = 2; int count =1;
+	while (two != power){
+		two <<= 1; count++;
+	}
+	return count;
+}
+
+int mul(int a, int b){
+	if (b == 1)
+		return b;
+	int powerOf2 = getClosestPowerOf2(b);
+	int d = getPowerOf2Power(powerOf2);
+	return a << d + mul(a, b-d);
+
+}
+speed depends on speed of shifting
