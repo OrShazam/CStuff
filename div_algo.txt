@@ -1,6 +1,5 @@
 IDEA FOR MULTIPLIER:
 
-
 int getClosestPowerOf2(int A){
 	// always smaller than A
 	A |= (A >> 1);
@@ -9,24 +8,28 @@ int getClosestPowerOf2(int A){
   	A |= (A >> 8);
   	A |= (A >> 16);
   	A |= (A >> 32);
-	A >> 1;
+	A++;
+	// this so far gets the next power of 2 bigger than a
+	A >>= 1;
+	// now got closest smaller one
 	return A;
 }
 
-int getPowerOfPower(int powerOf2){
-	int two = 2; int count =1;
-	while (two != power){
+int getPowerOfPowerOf2(int powerOf2){
+	int two = 2; int count = 1;
+	while (two != powerOf2){
 		two <<= 1; count++;
 	}
 	return count;
 }
 
 int mul(int a, int b){
-	if (b == 1)
-		return b;
+	if (b == 1){
+		return a;
+	}
 	int powerOf2 = getClosestPowerOf2(b);
-	int d = getPowerOf2Power(powerOf2);
-	return a << d + mul(a, b-d);
+	int d = getPowerOfPowerOf2(powerOf2);
+	return (a << d) + mul(a, b-powerOf2);
 
 }
 speed depends on speed of shifting
