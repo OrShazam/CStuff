@@ -15,8 +15,6 @@ struct _MUTEX_LIST_ENTRY {
 	PWAIT_LIST_ENTRY waitListTail;
 }; 
 
-typedef int(*CALLBACK_FUNC)(int mutexId, bool released);
-
 struct _WAIT_LIST_ENTRY {
 	int threadId;
 	PWAIT_LIST_ENTRY next;
