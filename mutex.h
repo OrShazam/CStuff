@@ -133,6 +133,3 @@ int DeleteMutex(int mutexId){
 	return true;
 }
 
-int main(){
-		return 0;
-}
