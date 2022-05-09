@@ -16,11 +16,7 @@ int getClosestPowerOf2(int A){
 }
 
 int getPowerOfPowerOf2(int powerOf2){
-	int two = 2; int count = 1;
-	while (two != powerOf2){
-		two <<= 1; count++;
-	}
-	return count;
+	return _bsf(powerOf2);
 }
 
 int mul(int a, int b){
